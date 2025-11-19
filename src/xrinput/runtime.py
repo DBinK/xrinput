@@ -15,7 +15,7 @@
     panel.start()
 
     for i in range(600):
-        data = rt.step(frame_index=i)
+        data = rt.read_input(frame_index=i)
         panel.update(data)
         time.sleep(0.1)
 
@@ -40,7 +40,7 @@ class XRRuntime:
 
     - 初始化时只运行一次 create_context()
     - 内部维护 session_state
-    - 对外提供 step() 每帧调用
+    - 对外提供 read_input() 每帧调用
     """
 
     def __init__(self):
@@ -56,7 +56,7 @@ class XRRuntime:
         print("  左手: X/Y 按键, 左摇杆, 左扳机, 左握把, 菜单键")
         print("  右手: A/B 按键, 右摇杆, 右扳机, 右握把, 系统键")
         print("  同时监控所有按键的触摸事件")
-        print("  调用 XRRuntime.step() 以按帧读取\n")
+        print("  调用 XRRuntime.read_input() 以按帧读取\n")
 
     # 处理所有待处理事件
     def _poll_events(self) -> None:
@@ -93,7 +93,7 @@ class XRRuntime:
                 break
 
     # 单帧逻辑
-    def step(self, frame_index: int) -> Dict[str, Any]:
+    def read_input(self, frame_index: int) -> Dict[str, Any]:
         """
         执行一帧的逻辑:
         - 处理事件 / Session 状态
@@ -161,7 +161,7 @@ if __name__ == "__main__":
 
         # 运行 600 帧，大约 1 分钟（0.1s/帧）
         for frame_index in range(600):
-            data = rt.step(frame_index)
+            data = rt.read_input(frame_index)
             panel.update(data)
             time.sleep(0.1)
 
