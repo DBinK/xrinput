@@ -10,8 +10,8 @@ requires-python = ">=3.10"
 dependencies = [
     "loguru>=0.7.3",
     "looptick>=0.1.4",
-    "matplotlib>=3.10.7",
     "pyopenxr>=1.1.5301",
+    "pyvista>=0.46.4",
     "rich>=14.2.0",
     "scipy>=1.15.3",
 ]

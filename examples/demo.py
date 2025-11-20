@@ -1,9 +1,11 @@
-from xrinput import XRRuntime, ControlPanel, Visualizer
+# demo.py
+
 import time
 
 from rich import print as rprint
 from looptick import LoopTick
 
+from xrinput import XRRuntime, ControlPanel, Visualizer
 from xrinput.utils import convert_pose
 
 if __name__ == "__main__":
@@ -22,7 +24,7 @@ if __name__ == "__main__":
     loop= LoopTick()
 
     try:
-        for i in range(600):
+        for i in range(100000):
             time.sleep(0.001)
             loop.tick()
             hz = loop.get_avg_hz()
