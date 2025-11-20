@@ -8,7 +8,9 @@ def convert_pos_to_robot(xr_pos: list[float]):
     返回: [x_r, y_r, z_r]
     """
     xq, yq, zq = xr_pos
-    # Quest: +x右 +y上 +z后 → Robot: +x前 +y左 +z上
+    # +x_r = -z_q（前 = -后）
+    # +y_r = -x_q（左 = -右）
+    # +z_r =  y_q（上 = 上）
     return [-zq, -xq, yq]
 
 
@@ -20,9 +22,9 @@ def convert_rot_to_robot(xr_quat: list[float]):
     """
     # Quest→Robot 坐标轴旋转矩阵（按 x/y/z 列）
     R_mat = np.array([
-        [ 0, -1,  0],   # Robot x
-        [ 0,  0,  1],   # Robot y
-        [-1,  0,  0]    # Robot z
+        [ 0,  0, -1],   # Robot X = -Quest Z
+        [-1,  0,  0],   # Robot Y = -Quest X
+        [ 0,  1,  0]    # Robot Z =  Quest Y
     ])
 
     R_q = rot.from_matrix(R_mat).as_quat()

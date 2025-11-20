@@ -153,22 +153,9 @@ class XRInputReader:
             rot = state.pose.orientation
 
             return {
-                "pos": (pos.x, pos.y, pos.z),
-                "rot": (rot.x, rot.y, rot.z, rot.w),
+                "pos": [pos.x, pos.y, pos.z],
+                "rot": [rot.x, rot.y, rot.z, rot.w],
             }
-            # return {
-            #     "pos": (
-            #         round(pos.x, 3),
-            #         round(pos.y, 3),
-            #         round(pos.z, 3),
-            #     ),
-            #     "rot": (
-            #         round(rot.x, 3),
-            #         round(rot.y, 3),
-            #         round(rot.z, 3),
-            #         round(rot.w, 3),
-            #     ),
-            # }
         except Exception:
             return {"pos": None, "rot": None}
 
@@ -194,8 +181,8 @@ class XRInputReader:
             rot = state.pose.orientation
             
             return {
-                "pos": (pos.x, pos.y, pos.z),
-                "rot": (rot.x, rot.y, rot.z, rot.w),
+                "pos": [pos.x, pos.y, pos.z],
+                "rot": [rot.x, rot.y, rot.z, rot.w],
             }
         except Exception:
             return {"pos": None, "rot": None}
