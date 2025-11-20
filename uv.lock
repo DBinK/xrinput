@@ -374,6 +374,15 @@ wheels = [
 ]
 
 [[package]]
+name = "looptick"
+version = "0.1.4"
+source = { registry = "https://mirror.nju.edu.cn/pypi/web/simple" }
+sdist = { url = "https://mirror.nju.edu.cn/pypi/web/packages/86/15/7e2e0703fb7d2a6c8714f0952c0489ebd06f8a13b020e1e175613bbda653/looptick-0.1.4.tar.gz", hash = "sha256:7bc35efd17b9e7200a67c92d30597cdf14e4d11c97c52a33aa632dbd5b6c3470" }
+wheels = [
+    { url = "https://mirror.nju.edu.cn/pypi/web/packages/ef/4a/af768dfe8a9ba02a95268b4e383ef93bc61e32b9c476e646cdf97d704252/looptick-0.1.4-py3-none-any.whl", hash = "sha256:54717b0ff56aa523780f5db562803795b5b3253c59c0ec4e7cb9c058e70fe4e1" },
+]
+
+[[package]]
 name = "markdown-it-py"
 version = "4.0.0"
 source = { registry = "https://mirror.nju.edu.cn/pypi/web/simple" }
@@ -949,6 +958,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "loguru" },
+    { name = "looptick" },
     { name = "matplotlib" },
     { name = "pyopenxr" },
     { name = "rich" },
@@ -959,6 +969,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "loguru", specifier = ">=0.7.3" },
+    { name = "looptick", specifier = ">=0.1.4" },
     { name = "matplotlib", specifier = ">=3.10.7" },
     { name = "pyopenxr", specifier = ">=1.1.5301" },
     { name = "rich", specifier = ">=14.2.0" },
