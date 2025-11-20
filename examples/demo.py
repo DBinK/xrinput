@@ -22,7 +22,7 @@ if __name__ == "__main__":
             panel_data.update(vr_data)
             panel.update(panel_data)
 
-            print(panel_data)
+            # rprint(panel_data)  # 打印数据
 
             left_pos = vr_data.get("left_pos") 
             left_rot = vr_data.get("left_rot")
@@ -38,8 +38,11 @@ if __name__ == "__main__":
                 hmd_pose = hmd_pos + hmd_rot
                 visualizer.update([left_pose, right_pose, hmd_pose])
 
-            print("左手位置:", left_pos, left_rot)
-            print("右手位置:", right_pos, right_rot)
+            # print("左手位置:", left_pos, left_rot)
+            # print("右手位置:", right_pos, right_rot)
+            # print("头位置:", hmd_pos, hmd_rot)
 
+    except KeyboardInterrupt:
+        print("退出程序")
     finally:
         xr_device.close()

@@ -37,9 +37,6 @@ class XRInputReader:
         """
         template: Dict[str, Any] = {}
         
-        template["hmd_pos"] = None
-        template["hmd_rot"] = None
-
         for name, cfg in ACTION_CONFIG.items():
             # 特殊处理 hand_pose
             if cfg["type"] == xr.ActionType.POSE_INPUT and name == "hand_pose":
@@ -56,6 +53,8 @@ class XRInputReader:
             else:
                 template[name] = None
                 
+        template["hmd_pos"] = None
+        template["hmd_rot"] = None
         return template
 
     # 同步当前动作状态（必须每帧调用一次）
