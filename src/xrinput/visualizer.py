@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from scipy.spatial.transform import Rotation as R
 
-class ControllerVisualizer:
+class Visualizer:
     def __init__(self, range_meters=1.0):
         """
         初始化控制器可视化器
@@ -38,13 +38,14 @@ class ControllerVisualizer:
         plt.ion()  # 开启交互模式
         plt.show()
 
-    def update(self, left_controller, right_controller):
+
+    def update(self, left_controller:list, right_controller:list):
         """
         更新可视化界面
         
         参数:
-        left_controller: xr.Posef 对象，包含orientation和position属性
-        right_controller: xr.Posef 对象，包含orientation和position属性
+        left_controller: [x,y,z] + [x, y, z, w] 7轴数据
+        right_controller: [x,y,z] + [x, y, z, w] 7轴数据
         """
         # 清除旧的轴向线条
         for i in range(3):
@@ -60,42 +61,44 @@ class ControllerVisualizer:
                     line.remove()
             self.right_axes_lines[i].clear()
         
-        # 更新左控制器
-        left_pos = left_controller.position
-        left_ori = left_controller.orientation
+        # 解析左控制器数据
+        left_pos_data = left_controller[:3]  # 前三个元素是位置
+        left_ori_data = left_controller[3:]  # 后四个元素是四元数方向
         
+        # 更新左控制器
         # 绘制左控制器位置点
         if self.left_controller_scatter:
             self.left_controller_scatter.remove()
         self.left_controller_scatter = self.ax.scatter(
-            left_pos.x, left_pos.y, left_pos.z, 
+            left_pos_data[0], left_pos_data[1], left_pos_data[2], 
             c='blue', s=100, label='Left Controller'
         )
         
         # 绘制左控制器坐标轴
         self._draw_coordinate_system(
-            (left_pos.x, left_pos.y, left_pos.z),
-            (left_ori.x, left_ori.y, left_ori.z, left_ori.w),
+            (left_pos_data[0], left_pos_data[1], left_pos_data[2]),
+            (left_ori_data[0], left_ori_data[1], left_ori_data[2], left_ori_data[3]),
             self.left_axes_lines,
             length=0.1
         )
         
-        # 更新右控制器
-        right_pos = right_controller.position
-        right_ori = right_controller.orientation
+        # 解析右控制器数据
+        right_pos_data = right_controller[:3]  # 前三个元素是位置
+        right_ori_data = right_controller[3:]  # 后四个元素是四元数方向
         
+        # 更新右控制器
         # 绘制右控制器位置点
         if self.right_controller_scatter:
             self.right_controller_scatter.remove()
         self.right_controller_scatter = self.ax.scatter(
-            right_pos.x, right_pos.y, right_pos.z, 
+            right_pos_data[0], right_pos_data[1], right_pos_data[2], 
             c='red', s=100, label='Right Controller'
         )
         
         # 绘制右控制器坐标轴
         self._draw_coordinate_system(
-            (right_pos.x, right_pos.y, right_pos.z),
-            (right_ori.x, right_ori.y, right_ori.z, right_ori.w),
+            (right_pos_data[0], right_pos_data[1], right_pos_data[2]),
+            (right_ori_data[0], right_ori_data[1], right_ori_data[2], right_ori_data[3]),
             self.right_axes_lines,
             length=0.1
         )
@@ -108,6 +111,7 @@ class ControllerVisualizer:
         # 更新图形
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
+
 
     def _draw_coordinate_system(self, position, orientation, axes_lines, length=0.1):
         """
@@ -146,28 +150,15 @@ class ControllerVisualizer:
 # 示例用法
 if __name__ == "__main__":
     # 创建可视化器实例，设置范围为1米
-    visualizer = ControllerVisualizer(range_meters=1.0)
+    visualizer = Visualizer(range_meters=1.0)
     
-    # 示例数据
-    from collections import namedtuple
-    
-    Vector3f = namedtuple('Vector3f', ['x', 'y', 'z'])
-    Quaternionf = namedtuple('Quaternionf', ['x', 'y', 'z', 'w'])
-    Posef = namedtuple('Posef', ['orientation', 'position'])
-    
-    # 创建示例Posef对象
-    left_pose = Posef(
-        orientation=Quaternionf(x=0.435, y=-0.074, z=-0.450, w=0.777),
-        position=Vector3f(x=0.151, y=0.909, z=-0.752)
-    )
-    
-    right_pose = Posef(
-        orientation=Quaternionf(x=0.493, y=0.330, z=0.317, w=0.740),
-        position=Vector3f(x=0.309, y=0.905, z=-0.823)
-    )
+    # 示例数据 - 直接使用7元素数组格式：[x, y, z, qx, qy, qz, qw]
+    # 分别代表位置(x, y, z)和四元数方向(x, y, z, w)
+    left_controller_data = [0.151, 0.909, -0.752, 0.435, -0.074, -0.450, 0.777]
+    right_controller_data = [0.309, 0.905, -0.823, 0.493, 0.330, 0.317, 0.740]
     
     # 更新可视化
-    visualizer.update(left_pose, right_pose)
+    visualizer.update(left_controller_data, right_controller_data)
     
     # 保持窗口开启
     plt.ioff()
