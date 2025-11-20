@@ -29,6 +29,31 @@ class XRInputReader:
 
     def __init__(self, context: XRContext):
         self.ctx = context
+        self.data_template = self._create_data_template()
+
+    def _create_data_template(self) -> Dict[str, Any]:
+        """
+        创建数据模板字典，包含所有可能的键，初始值为None
+        """
+        template: Dict[str, Any] = {}
+        
+        for name, cfg in ACTION_CONFIG.items():
+            # 特殊处理 pose
+            if cfg["type"] == xr.ActionType.POSE_INPUT and name == POSE_ACTION_NAME:
+                for side in ("left", "right"):
+                    template[f"{name}_{side}_pos"] = None
+                    template[f"{name}_{side}_rot"] = None
+                continue
+
+            # 其他类型输入
+            if cfg.get("subaction"):
+                # 双手各自的数据
+                template[f"{name}_left"] = None
+                template[f"{name}_right"] = None
+            else:
+                template[name] = None
+                
+        return template
 
     # 同步当前动作状态（必须每帧调用一次）
     def sync_actions(self) -> None:
@@ -124,19 +149,24 @@ class XRInputReader:
             )
             pos = state.pose.position
             rot = state.pose.orientation
+
             return {
-                "pos": (
-                    round(pos.x, 3),
-                    round(pos.y, 3),
-                    round(pos.z, 3),
-                ),
-                "rot": (
-                    round(rot.x, 3),
-                    round(rot.y, 3),
-                    round(rot.z, 3),
-                    round(rot.w, 3),
-                ),
+                "pos": (pos.x, pos.y, pos.z),
+                "rot": (rot.x, rot.y, rot.z, rot.w),
             }
+            # return {
+            #     "pos": (
+            #         round(pos.x, 3),
+            #         round(pos.y, 3),
+            #         round(pos.z, 3),
+            #     ),
+            #     "rot": (
+            #         round(rot.x, 3),
+            #         round(rot.y, 3),
+            #         round(rot.z, 3),
+            #         round(rot.w, 3),
+            #     ),
+            # }
         except Exception:
             return {"pos": None, "rot": None}
 
@@ -148,15 +178,16 @@ class XRInputReader:
         返回:
         - dict, key 为动作名 / 动作名_左右等
         """
-        data: Dict[str, Any] = {}
+        # 使用预创建的模板副本，避免每次都重新创建
+        data: Dict[str, Any] = self.data_template.copy()
 
         for name, cfg in ACTION_CONFIG.items():
             # 特殊处理 pose
             if cfg["type"] == xr.ActionType.POSE_INPUT and name == POSE_ACTION_NAME:
                 for side in ("left", "right"):
                     pose = self.read_pose(side)
-                    data[f"{name}_{side}_pos"] = pose["pos"]
-                    data[f"{name}_{side}_rot"] = pose["rot"]
+                    data[f"{side}_pos"] = pose["pos"]
+                    data[f"{side}_rot"] = pose["rot"]
                 continue
 
             # 其他类型输入
