@@ -23,14 +23,31 @@ class ControlPanel:
         table.add_column("值")  #, justify="right")
 
         for k, v in self.data.items():
-            # 如果值是浮点数，按指定精度显示
-            if isinstance(v, float):
-                formatted_value = f"{v:.{self.float_precision}f}"
-            else:
-                formatted_value = str(v)
+            formatted_value = self._format_value(v)
             table.add_row(str(k), formatted_value)
 
         return Panel(table, title=self.title, border_style="cyan")
+
+    def _format_value(self, value):
+        """格式化值，处理浮点数和浮点数列表"""
+        if isinstance(value, float):
+            # 格式化浮点数
+            return f"{value:.{self.float_precision}f}"
+        elif isinstance(value, (list, tuple)) and len(value) > 0:
+            # 检查是否为浮点数列表或元组
+            if all(isinstance(item, float) for item in value):
+                # 格式化浮点数列表/元组
+                formatted_items = [f"{item:.{self.float_precision}f}" for item in value]
+                if isinstance(value, list):
+                    return "[" + ", ".join(formatted_items) + "]"
+                else:
+                    return "(" + ", ".join(formatted_items) + ")"
+            else:
+                # 非纯浮点数列表，使用默认字符串表示
+                return str(value)
+        else:
+            # 其他类型使用默认字符串表示
+            return str(value)
 
     # 更新接口 —— 推荐的版本
     def update(self, data: dict):
@@ -75,7 +92,9 @@ if __name__ == "__main__":
             "CPU": f"{random.randint(1, 100)}%",
             "FPS": random.randint(20, 120),
             "温度": f"{random.randint(30, 90)}°C",
-            "精确值": random.random() * 100
+            "精确值": random.random() * 100,
+            "浮点数列表": [random.random() * 10 for _ in range(3)],
+            "浮点数元组": (random.random() * 5, random.random() * 5)
         })
 
         time.sleep(0.3)
