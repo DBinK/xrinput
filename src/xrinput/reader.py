@@ -14,7 +14,7 @@ from typing import Any, Dict, Optional
 
 import xr
 
-from .config import ACTION_CONFIG, POSE_ACTION_NAME
+from .config import ACTION_CONFIG
 from .core import XRContext
 
 
@@ -37,12 +37,15 @@ class XRInputReader:
         """
         template: Dict[str, Any] = {}
         
+        template["hmd_pos"] = None
+        template["hmd_rot"] = None
+
         for name, cfg in ACTION_CONFIG.items():
-            # 特殊处理 pose
-            if cfg["type"] == xr.ActionType.POSE_INPUT and name == POSE_ACTION_NAME:
+            # 特殊处理 hand_pose
+            if cfg["type"] == xr.ActionType.POSE_INPUT and name == "hand_pose":
                 for side in ("left", "right"):
-                    template[f"{name}_{side}_pos"] = None
-                    template[f"{name}_{side}_rot"] = None
+                    template[f"{side}_pos"] = None
+                    template[f"{side}_rot"] = None
                 continue
 
             # 其他类型输入
@@ -212,7 +215,7 @@ class XRInputReader:
 
         for name, cfg in ACTION_CONFIG.items():
             # 特殊处理 pose
-            if cfg["type"] == xr.ActionType.POSE_INPUT and name == POSE_ACTION_NAME:
+            if cfg["type"] == xr.ActionType.POSE_INPUT and name == "hand_pose":
                 for side in ("left", "right"):
                     pose = self.read_hand_pose(side)
                     data[f"{side}_pos"] = pose["pos"]

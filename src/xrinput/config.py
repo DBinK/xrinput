@@ -16,8 +16,6 @@ CONTROLLER_SUBACTION_PATHS = (
     "/user/hand/right",
 )
 
-# pose 动作名称
-POSE_ACTION_NAME = "pose"
 
 
 def get_enabled_extensions() -> list[str]:
@@ -145,7 +143,7 @@ ACTION_CONFIG: dict = {
         "paths": ["/user/hand/right/input/system/click"],
     },
     # 控制器姿态（双手）
-    POSE_ACTION_NAME: {
+    "hand_pose": {
         "type": xr.ActionType.POSE_INPUT,
         "localized": "Controller Pose",
         "paths": [
@@ -154,4 +152,9 @@ ACTION_CONFIG: dict = {
         ],
         "subaction": True,
     },
+    # 头显姿态
+    # "hmd_pose": {
+    #     "type": xr.ActionType.POSE_INPUT,
+    #     "localized": "HMD Pose",
+    # },
 }

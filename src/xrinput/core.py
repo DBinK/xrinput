@@ -21,7 +21,6 @@ from xrinput.log import logger
 from .config import (
     ACTION_CONFIG,
     CONTROLLER_SUBACTION_PATHS,
-    POSE_ACTION_NAME,
     get_enabled_extensions,
 )
 
@@ -265,7 +264,7 @@ def create_pose_spaces(
     """
     为 pose 动作创建左右手空间
     """
-    pose_action = button_actions[POSE_ACTION_NAME]
+    pose_action = button_actions["hand_pose"]
     pose_spaces: Dict[str, xr.Space] = {}
 
     for side in ("left", "right"):

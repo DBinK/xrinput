@@ -6,11 +6,11 @@ from scipy.spatial.transform import Rotation as R
 class Visualizer:
     def __init__(self, range_meters=1.0):
         """
-        初始化控制器可视化器
+        初始化多物体可视化器
         
         参数:
         range_meters: float, 可视化范围(以米为单位)，默认为1.0米
-                     控制器将在[-range_meters, range_meters]的立方体空间内显示
+                     物体将在[-range_meters, range_meters]的立方体空间内显示
         """
         # 保存范围参数
         self.range_meters = range_meters
@@ -18,7 +18,7 @@ class Visualizer:
         # 创建图形和3D轴
         self.fig = plt.figure(figsize=(10, 8))
         self.ax = self.fig.add_subplot(111, projection='3d')
-        self.ax.set_title('VR Controllers 3D Visualization')
+        self.ax.set_title('VR Objects 3D Visualization')
         self.ax.set_xlabel('X (meters)')
         self.ax.set_ylabel('Y (meters)')
         self.ax.set_zlabel('Z (meters)')
@@ -28,90 +28,12 @@ class Visualizer:
         self.ax.set_ylim(0, 2 * self.range_meters)  # Y轴从0开始到2倍范围
         self.ax.set_zlim(-self.range_meters, self.range_meters)
         
-        # 初始化图形元素
-        self.left_controller_scatter = None
-        self.right_controller_scatter = None
-        self.left_axes_lines = [[], [], []]  # X, Y, Z轴线条
-        self.right_axes_lines = [[], [], []]  # X, Y, Z轴线条
+        # 存储所有物体的图形元素
+        self.objects_elements = []  # [(scatter, axes_lines), ...]
         
         # 显示图形
         plt.ion()  # 开启交互模式
         plt.show()
-
-
-    def update(self, left_controller:list, right_controller:list):
-        """
-        更新可视化界面
-        
-        参数:
-        left_controller: [x,y,z] + [x, y, z, w] 7轴数据
-        right_controller: [x,y,z] + [x, y, z, w] 7轴数据
-        """
-        # 清除旧的轴向线条
-        for i in range(3):
-            # 删除左控制器的轴线
-            for line in self.left_axes_lines[i][:]:  # 使用[:]创建副本以避免迭代时修改列表
-                if line in self.ax.lines:
-                    line.remove()
-            self.left_axes_lines[i].clear()
-            
-            # 删除右控制器的轴线
-            for line in self.right_axes_lines[i][:]:  # 使用[:]创建副本以避免迭代时修改列表
-                if line in self.ax.lines:
-                    line.remove()
-            self.right_axes_lines[i].clear()
-        
-        # 解析左控制器数据
-        left_pos_data = left_controller[:3]  # 前三个元素是位置
-        left_ori_data = left_controller[3:]  # 后四个元素是四元数方向
-        
-        # 更新左控制器
-        # 绘制左控制器位置点
-        if self.left_controller_scatter:
-            self.left_controller_scatter.remove()
-        self.left_controller_scatter = self.ax.scatter(
-            left_pos_data[0], left_pos_data[1], left_pos_data[2], 
-            c='blue', s=100, label='Left Controller'
-        )
-        
-        # 绘制左控制器坐标轴
-        self._draw_coordinate_system(
-            (left_pos_data[0], left_pos_data[1], left_pos_data[2]),
-            (left_ori_data[0], left_ori_data[1], left_ori_data[2], left_ori_data[3]),
-            self.left_axes_lines,
-            length=0.1
-        )
-        
-        # 解析右控制器数据
-        right_pos_data = right_controller[:3]  # 前三个元素是位置
-        right_ori_data = right_controller[3:]  # 后四个元素是四元数方向
-        
-        # 更新右控制器
-        # 绘制右控制器位置点
-        if self.right_controller_scatter:
-            self.right_controller_scatter.remove()
-        self.right_controller_scatter = self.ax.scatter(
-            right_pos_data[0], right_pos_data[1], right_pos_data[2], 
-            c='red', s=100, label='Right Controller'
-        )
-        
-        # 绘制右控制器坐标轴
-        self._draw_coordinate_system(
-            (right_pos_data[0], right_pos_data[1], right_pos_data[2]),
-            (right_ori_data[0], right_ori_data[1], right_ori_data[2], right_ori_data[3]),
-            self.right_axes_lines,
-            length=0.1
-        )
-        
-        # 添加图例
-        # 只在第一次添加图例，避免重复
-        if not self.ax.get_legend():
-            self.ax.legend()
-        
-        # 更新图形
-        self.fig.canvas.draw()
-        self.fig.canvas.flush_events()
-
 
     def _draw_coordinate_system(self, position, orientation, axes_lines, length=0.1):
         """
@@ -147,18 +69,92 @@ class Visualizer:
             )[0]
             axes_lines[i].append(line)
 
+    def _draw_single_pose(self, pose_data, color='blue', label=None):
+        """
+        绘制单个物体的位姿
+        
+        参数:
+        pose_data: [x, y, z, qx, qy, qz, qw] 7轴数据
+        color: 绘制颜色
+        label: 标签
+        """
+        # 解析数据
+        pos_data = pose_data[:3]  # 前三个元素是位置
+        ori_data = pose_data[3:]  # 后四个元素是四元数方向
+        
+        # 绘制位置点
+        scatter = self.ax.scatter(
+            pos_data[0], pos_data[1], pos_data[2], 
+            c=color, s=100, label=label
+        )
+        
+        # 绘制坐标轴
+        axes_lines = [[], [], []]  # X, Y, Z轴线条
+        self._draw_coordinate_system(
+            (pos_data[0], pos_data[1], pos_data[2]),
+            (ori_data[0], ori_data[1], ori_data[2], ori_data[3]),
+            axes_lines,
+            length=0.1
+        )
+        
+        return scatter, axes_lines
+
+    def update(self, objects_data):
+        """
+        更新可视化界面，支持多个物体
+        
+        参数:
+        objects_data: 包含多个7自由度数据的列表，每个元素为[x,y,z,qx,qy,qz,qw]
+        """
+        # 清除所有现有的图形元素
+        for scatter, axes_lines in self.objects_elements:
+            # 删除散点图
+            if scatter:
+                scatter.remove()
+                
+            # 删除坐标轴线条
+            for i in range(3):
+                for line in axes_lines[i][:]:
+                    if line in self.ax.lines:
+                        line.remove()
+        
+        # 清空存储的元素列表
+        self.objects_elements.clear()
+        
+        # 为每个物体创建颜色和标签
+        colors = ['blue', 'red', 'green', 'orange', 'purple', 'brown', 'pink', 'gray', 'olive', 'cyan']
+        labels = [f'Object {i+1}' for i in range(len(objects_data))]
+        
+        # 绘制所有物体
+        for i, obj_data in enumerate(objects_data):
+            color = colors[i % len(colors)]
+            label = labels[i]
+            
+            scatter, axes_lines = self._draw_single_pose(obj_data, color, label)
+            self.objects_elements.append((scatter, axes_lines))
+        
+        # 添加图例
+        self.ax.legend()
+        
+        # 更新图形
+        self.fig.canvas.draw()
+        self.fig.canvas.flush_events()
+
 # 示例用法
 if __name__ == "__main__":
     # 创建可视化器实例，设置范围为1米
     visualizer = Visualizer(range_meters=1.0)
     
-    # 示例数据 - 直接使用7元素数组格式：[x, y, z, qx, qy, qz, qw]
+    # 示例数据 - 多个7元素数组格式：[x, y, z, qx, qy, qz, qw]
     # 分别代表位置(x, y, z)和四元数方向(x, y, z, w)
-    left_controller_data = [0.151, 0.909, -0.752, 0.435, -0.074, -0.450, 0.777]
-    right_controller_data = [0.309, 0.905, -0.823, 0.493, 0.330, 0.317, 0.740]
+    objects_data = [
+        [0.151, 0.909, -0.752, 0.435, -0.074, -0.450, 0.777],  # Object 1
+        [0.309, 0.905, -0.823, 0.493, 0.330, 0.317, 0.740],   # Object 2
+        [0.0, 1.0, -0.5, 0.0, 0.0, 0.0, 1.0]                  # Object 3 (默认朝向)
+    ]
     
     # 更新可视化
-    visualizer.update(left_controller_data, right_controller_data)
+    visualizer.update(objects_data)
     
     # 保持窗口开启
     plt.ioff()

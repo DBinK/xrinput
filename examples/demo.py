@@ -22,17 +22,21 @@ if __name__ == "__main__":
             panel_data.update(vr_data)
             panel.update(panel_data)
 
-            # print(panel_data)
+            print(panel_data)
 
             left_pos = vr_data.get("left_pos") 
             left_rot = vr_data.get("left_rot")
             right_pos = vr_data.get("right_pos") 
             right_rot = vr_data.get("right_rot")
+            hmd_pos = vr_data.get("hmd_pos")
+            hmd_rot = vr_data.get("hmd_rot")
 
-            if left_pos and left_rot and right_pos and right_rot:
+            if left_pos and left_rot and right_pos and right_rot and hmd_pos and hmd_rot:
                 left_pose = left_pos + left_rot
                 right_pose = right_pos + right_rot
-                visualizer.update(left_pose, right_pose)
+
+                hmd_pose = hmd_pos + hmd_rot
+                visualizer.update([left_pose, right_pose, hmd_pose])
 
             print("左手位置:", left_pos, left_rot)
             print("右手位置:", right_pos, right_rot)
