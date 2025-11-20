@@ -2,26 +2,23 @@
 
 import time
 
-from rich import print as rprint
-from looptick import LoopTick
+from looptick import LoopTick  # (可选项) 帧率计算 pip install looptick
 
 from xrinput import XRRuntime, ControlPanel, Visualizer
-from xrinput.utils import convert_pose, convert_pos_to_robot, convert_rot_to_robot
+from xrinput.utils import convert_pose
 
 if __name__ == "__main__":
 
     print("初始化 OpenXR")
 
-    xr_device = XRRuntime()
+    xr_device = XRRuntime()  # 初始化 xr 设备
 
-    rprint(xr_device)
-
-    panel = ControlPanel(title="Quest 3 控制器状态")
+    panel = ControlPanel(title="XR 控制器状态")  # 创建 CLI 显示面板
     panel.start()
 
-    visualizer = Visualizer()
+    visualizer = Visualizer()  # 创建可视化器实例
 
-    loop= LoopTick()
+    loop= LoopTick()   # 创建帧率计算实例
 
     try:
         for i in range(100000):
@@ -29,7 +26,7 @@ if __name__ == "__main__":
             loop.tick()
             hz = loop.get_avg_hz()
 
-            xr_data = xr_device.read_input(i)
+            xr_data = xr_device.read_input()
             panel_data = {
                 "会话状态": xr_device.session_state.name,
                 "帧计数": i,

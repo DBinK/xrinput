@@ -93,7 +93,7 @@ class XRRuntime:
                 break
 
     # 单帧逻辑
-    def read_input(self, frame_index: int) -> Dict[str, Any]:
+    def read_input(self) -> Dict[str, Any]:
         """
         执行一帧的逻辑:
         - 处理事件 / Session 状态
@@ -119,8 +119,7 @@ class XRRuntime:
 
         elif self.session_state == xr.SessionState.IDLE:
             # 可根据需要添加提示逻辑
-            if frame_index % 60 == 0:
-                print("⏳ 等待头显激活...")
+            print("⏳ 等待头显激活...")
 
         return result_data
 
@@ -161,7 +160,7 @@ if __name__ == "__main__":
 
         # 运行 600 帧，大约 1 分钟（0.1s/帧）
         for frame_index in range(600):
-            data = rt.read_input(frame_index)
+            data = rt.read_input()
             panel.update(data)
             time.sleep(0.1)
 

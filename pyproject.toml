@@ -3,18 +3,18 @@ name = "xrinput"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-authors = [
-    { name = "理客_click", email = "clickowo@outlook.com" }
-]
+authors = [{ name = "理客_click", email = "clickowo@outlook.com" }]
 requires-python = ">=3.10"
 dependencies = [
     "loguru>=0.7.3",
     "looptick>=0.1.4",
     "pyopenxr>=1.1.5301",
-    "pyvista>=0.46.4",
-    "rich>=14.2.0",
     "scipy>=1.15.3",
 ]
+
+[project.optional-dependencies]
+viz = ["pyvista>=0.46.4"]  # 3D 可视化
+panel = ["rich>=14.2.0"]   # CLI 数据面板
 
 [build-system]
 requires = ["uv_build>=0.9.3,<0.10.0"]
