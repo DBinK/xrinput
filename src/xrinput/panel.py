@@ -8,10 +8,11 @@ import threading
 class ControlPanel:
     """终端底部中控面板，可使用 dict 更新数据"""
 
-    def __init__(self, refresh_hz=8, title="中控面板"):
+    def __init__(self, refresh_hz=8, title="中控面板", float_precision=3):
         self.console = Console()
         self.refresh_hz = refresh_hz
         self.title = title
+        self.float_precision = float_precision
         self.data = {}
         self._live = None
 
@@ -22,7 +23,12 @@ class ControlPanel:
         table.add_column("值")  #, justify="right")
 
         for k, v in self.data.items():
-            table.add_row(str(k), str(v))
+            # 如果值是浮点数，按指定精度显示
+            if isinstance(v, float):
+                formatted_value = f"{v:.{self.float_precision}f}"
+            else:
+                formatted_value = str(v)
+            table.add_row(str(k), formatted_value)
 
         return Panel(table, title=self.title, border_style="cyan")
 
@@ -69,6 +75,7 @@ if __name__ == "__main__":
             "CPU": f"{random.randint(1, 100)}%",
             "FPS": random.randint(20, 120),
             "温度": f"{random.randint(30, 90)}°C",
+            "精确值": random.random() * 100
         })
 
         time.sleep(0.3)
