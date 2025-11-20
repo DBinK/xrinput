@@ -33,9 +33,9 @@ class Visualizer:
         self.objects = []
         self.colors = ["blue", "red", "green"]
 
-        self.plotter.camera.position = (2, 2, 2)
-        self.plotter.camera.focal_point = (0, 1, 0)
-        self.plotter.camera.up = (0, 1, 0)
+        self.plotter.camera.position = (-3, -3, 3)
+        self.plotter.camera.focal_point = (2, 2, 0)
+        self.plotter.camera.up = (0, 0, 1)
 
         self._draw_world_axes()
 
