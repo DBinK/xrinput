@@ -15,6 +15,7 @@ dependencies = [
 [project.optional-dependencies]
 viz = ["pyvista>=0.46.4"]  # 3D 可视化
 panel = ["rich>=14.2.0"]   # CLI 数据面板
+all = ["pyvista>=0.46.4", "rich>=14.2.0"]
 
 [build-system]
 requires = ["uv_build>=0.9.3,<0.10.0"]

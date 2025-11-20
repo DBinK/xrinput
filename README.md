@@ -50,7 +50,7 @@
 安装
 
 ```shell
-pip install git+https://github.com/DBinK/xrinput.git
+pip install git+https://github.com/DBinK/xrinput.git[all]
 ```
 
 ## 基本使用
@@ -197,6 +197,10 @@ except KeyboardInterrupt:
 
 ## CLI 显示面板
 提供一个 CLI 显示面板, 在 `xrinput.ControllPanel` 中
+
+```shell
+pip install git+https://github.com/DBinK/xrinput.git[panel]  # 加上 panel 选项
+```
 
 ```python
 # panel_use.py
