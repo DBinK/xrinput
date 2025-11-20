@@ -123,7 +123,7 @@ class XRInputReader:
         return None
 
     # 读取 pose（左右手）
-    def read_pose(self, side: str) -> Dict[str, Any]:
+    def read_hand_pose(self, side: str) -> Dict[str, Any]:
         """
         读取控制器姿态
 
@@ -170,6 +170,35 @@ class XRInputReader:
         except Exception:
             return {"pos": None, "rot": None}
 
+    def read_hmd_pose(self) -> Dict[str, Any]:
+        """
+        读取头显(HMD)姿态
+
+        返回:
+        - 字典:
+          {
+            "pos": (x, y, z) 或 None,
+            "rot": (x, y, z, w) 或 None,
+          }
+        """
+        try:
+            state = xr.locate_space(
+                space=self.ctx.view_space,
+                base_space=self.ctx.reference_space,
+                time=self.ctx.time_converter.get_xr_time(),
+            )
+            
+            pos = state.pose.position
+            rot = state.pose.orientation
+            
+            return {
+                "pos": (pos.x, pos.y, pos.z),
+                "rot": (rot.x, rot.y, rot.z, rot.w),
+            }
+        except Exception:
+            return {"pos": None, "rot": None}
+
+
     # 一次性读取所有动作
     def read_all(self) -> Dict[str, Any]:
         """
@@ -185,7 +214,7 @@ class XRInputReader:
             # 特殊处理 pose
             if cfg["type"] == xr.ActionType.POSE_INPUT and name == POSE_ACTION_NAME:
                 for side in ("left", "right"):
-                    pose = self.read_pose(side)
+                    pose = self.read_hand_pose(side)
                     data[f"{side}_pos"] = pose["pos"]
                     data[f"{side}_rot"] = pose["rot"]
                 continue
@@ -201,5 +230,10 @@ class XRInputReader:
                 )
             else:
                 data[name] = self.read_action_state(name)
+
+        # 添加HMD pose数据
+        hmd_pose = self.read_hmd_pose()
+        data["hmd_pos"] = hmd_pose["pos"]
+        data["hmd_rot"] = hmd_pose["rot"]
 
         return data

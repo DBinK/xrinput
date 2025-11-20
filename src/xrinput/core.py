@@ -109,6 +109,7 @@ class XRContext:
     button_actions: Dict[str, xr.Action]
     action_types: Dict[str, xr.ActionType]
     pose_spaces: Dict[str, xr.Space]
+    view_space: xr.Space
     reference_space: xr.Space
     time_converter: TimeConverter
 
@@ -294,6 +295,18 @@ def create_reference_space(session: xr.Session) -> xr.Space:
     )
     return reference_space
 
+def create_view_space(session: xr.Session) -> xr.Space:
+    """
+    创建视图空间（用于获取HMD位置）
+    """
+    view_space = xr.create_reference_space(
+        session=session,
+        create_info=xr.ReferenceSpaceCreateInfo(
+            reference_space_type=xr.ReferenceSpaceType.VIEW,
+            pose_in_reference_space=xr.Posef(),  # 默认姿势
+        ),
+    )
+    return view_space
 
 def create_time_converter(instance: xr.Instance) -> TimeConverter:
     """
@@ -317,6 +330,7 @@ def create_context() -> XRContext:
     attach_action_set(session, action_set)
     pose_spaces = create_pose_spaces(session, instance, button_actions)
     reference_space = create_reference_space(session)
+    view_space = create_view_space(session)
     time_converter = create_time_converter(instance)
 
     context = XRContext(
@@ -327,6 +341,7 @@ def create_context() -> XRContext:
         button_actions=button_actions,
         action_types=action_types,
         pose_spaces=pose_spaces,
+        view_space=view_space,
         reference_space=reference_space,
         time_converter=time_converter,
     )
