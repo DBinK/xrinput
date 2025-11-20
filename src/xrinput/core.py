@@ -17,6 +17,7 @@ from typing import Dict, Tuple
 
 import xr
 
+from xrinput.log import logger
 from .config import (
     ACTION_CONFIG,
     CONTROLLER_SUBACTION_PATHS,
@@ -130,11 +131,15 @@ def get_system(instance: xr.Instance) -> xr.SystemId:
     """
     获取系统 ID
     """
-    system = xr.get_system(
-        instance,
-        xr.SystemGetInfo(form_factor=xr.FormFactor.HEAD_MOUNTED_DISPLAY),
-    )
-    return system
+    try:
+        system = xr.get_system(
+            instance,
+            xr.SystemGetInfo(form_factor=xr.FormFactor.HEAD_MOUNTED_DISPLAY),
+        )
+        return system
+    except Exception as e:
+        logger.exception(f"获取系统 ID 失败, 请检查VR设备是否连接PC: {e}")
+        exit(1)
 
 
 def create_session(instance: xr.Instance, system: xr.SystemId) -> xr.Session:

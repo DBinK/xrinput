@@ -104,7 +104,7 @@ class XRRuntime:
         """
         self._poll_events()
 
-        result_data: Dict[str, Any] = {}
+        result_data: Dict[str, Any] = self.reader.data_template  # 从数据模板创建
 
         if self.session_state == xr.SessionState.FOCUSED:
             # 同步动作
