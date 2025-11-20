@@ -53,23 +53,12 @@ if __name__ == "__main__":
                 hmd_pose = hmd_pos + hmd_rot
 
                 left_pose_robot = convert_pose(left_pose)
-                # right_pose_robot = convert_pose(right_pose)
+                right_pose_robot = convert_pose(right_pose)
                 hmd_pose_robot = convert_pose(hmd_pose)
 
-                right_pos_robot = convert_pos_to_robot(right_pos)
-                right_rot_robot = convert_rot_to_robot(right_rot)
-                # right_pos_robot = right_pos
-                # right_rot_robot = right_rot
 
-                right_pose_robot = right_pos_robot + right_rot_robot
-
-                # visualizer.update([left_pose_robot, right_pose_robot, hmd_pose_robot])
-                visualizer.update([right_pose_robot])
-
-            # print("左手位置:", left_pos, left_rot)
-            # print("右手位置:", right_pos, right_rot)
-            # print("头位置:", hmd_pos, hmd_rot)
-
+                visualizer.update([left_pose_robot, right_pose_robot, hmd_pose_robot])
+                
     except KeyboardInterrupt:
         print("退出程序")
     finally:
