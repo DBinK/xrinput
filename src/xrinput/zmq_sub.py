@@ -33,7 +33,7 @@ class ZMQSubscriber:
 
 
 if __name__ == "__main__":
-    sub = ZMQSubscriber()
+    sub = ZMQSubscriber("tcp://localhost:5555")
     while True:
         data = sub.try_recv(timeout=500) 
         if data:
