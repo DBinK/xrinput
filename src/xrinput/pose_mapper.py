@@ -26,7 +26,7 @@ class PoseMapper:
         self.ref_t = None
 
         self.rel_R = None
-        self.rel_t = None
+        self.rel_t_world = None
 
         self.current_R = None
         self.current_t = None
@@ -50,25 +50,29 @@ class PoseMapper:
 
         R_vr = R.from_quat(vr_quat)
 
-        # 计算抓取瞬间的相对姿态
+        # 记录完整相对姿态（以后可能要恢复旋转）
         self.rel_R = R_vr.inv() * self.current_R
-        self.rel_t = R_vr.inv().apply(self.current_t - vr_pos)
+
+        # 关键：记录“世界坐标系”的偏移，而不是 VR 坐标系
+        self.rel_t_world = self.current_t - vr_pos
 
         self.dragging = True
-
+    
     # ------------------ 3. 停止拖拽 ------------------
     def stop_drag(self):
         self.dragging = False
 
     # ------------------ 4. 拖拽期间持续更新 ------------------
     def update(self, vr_pos, vr_quat):
-        assert self.dragging and self.rel_R is not None and self.rel_t is not None and self.current_R is not None, "必须先调用 start_drag()"
+        assert self.dragging and self.rel_R is not None and self.rel_t_world is not None and self.current_R is not None, "必须先调用 start_drag()"
 
         R_vr = R.from_quat(vr_quat)
 
-        # 计算新的绝对姿态
+        # 旋转部分正常更新
         self.current_R = R_vr * self.rel_R
-        self.current_t = vr_pos + R_vr.apply(self.rel_t)
+
+        # 平移只跟 VR 平移，不受旋转影响
+        self.current_t = vr_pos + self.rel_t_world
 
         return self.current_t.tolist(), self.current_R.as_quat().tolist()
 

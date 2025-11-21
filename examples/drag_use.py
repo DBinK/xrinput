@@ -13,7 +13,7 @@ if __name__ == "__main__":
     visualizer = Visualizer()
 
     # 初始化参考姿态（只需一次）
-    init_pos  = [0.0, 0.0, 0.0]
+    init_pos  = [0.0, 0.0, 1.2]
     init_quat = [0.0, 0.0, 0.0, 1.0]
 
     mapper.init_reference(init_pos, init_quat)
@@ -41,6 +41,7 @@ if __name__ == "__main__":
             vr_pos     = vr_pose[:3]
             vr_quat    = vr_pose[3:]
 
+
             # 1. 松开按钮 → 停止拖拽
             if trigger <= 0.5:
                 mapper.stop_drag()
@@ -53,11 +54,16 @@ if __name__ == "__main__":
             elif trigger > 0.5 and mapper.dragging:
                 mapper.update(vr_pos, vr_quat)
 
+
             # 4. 获取映射后的目标姿态
             target_pos, target_ori = mapper.get_target()
             
             if target_pos is not None and target_ori is not None:
+                
                 target_pose = target_pos + target_ori
+                # target_pose = target_pos + init_quat
+                # target_pose = init_pos + target_ori
+
                 visualizer.update( [target_pose, vr_pose] )
 
             time.sleep(0.001)
