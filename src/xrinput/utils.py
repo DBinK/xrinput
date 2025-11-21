@@ -39,7 +39,7 @@ def convert_pose(xr_pose: list[float]) -> list[float]:
     """
     robot_pos = convert_pos_to_robot(xr_pose[:3])
     robot_rot = convert_rot_to_robot(xr_pose[3:])
-    return robot_pos + robot_rot
+    return robot_pos + robot_rot # type: ignore
 
 def round_list(_list: list[float], precision: int = 3) -> list[float]:
     """ 列表元素四舍五入 """
@@ -61,5 +61,5 @@ if __name__ == "__main__":
     # 生成四元数 (xyzw)
     q_quest = rot.from_euler('ZYX', [yaw, pitch, roll]).as_quat()
 
-    q_r = convert_rot_to_robot(q_quest)
+    q_r = convert_rot_to_robot(q_quest) # type: ignore
     print(q_r)

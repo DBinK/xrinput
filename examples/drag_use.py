@@ -16,7 +16,8 @@ if __name__ == "__main__":
     init_pos  = [0.0, 0.0, 1.2]
     init_quat = [0.0, 0.0, 0.0, 1.0]
 
-    mapper.init_reference(init_pos, init_quat)
+    # 对齐手柄和被操作物体初始位置
+    mapper.init_reference(init_pos, init_quat)  
 
     try:
         while True:
