@@ -1,6 +1,3 @@
-# minimal.py
-# pip install rich
-
 import time
 
 from rich import print  # (可选项) 推荐使用 rich 打印更美观

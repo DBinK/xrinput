@@ -1,6 +1,3 @@
-# minimal.py
-# pip install rich
-
 import time
 
 

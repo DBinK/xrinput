@@ -1,5 +1,3 @@
-# demo.py
-
 import time
 
 from looptick import LoopTick  # (可选项) 帧率计算 pip install looptick
