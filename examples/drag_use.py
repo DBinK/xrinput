@@ -4,6 +4,7 @@ from scipy.spatial.transform import Rotation as R
 
 from xrinput import XRRuntime, PoseMapper, Visualizer
 from xrinput.utils import convert_pose
+from xrinput.filters import LowPassFilter
 
 if __name__ == "__main__":
 
@@ -11,6 +12,7 @@ if __name__ == "__main__":
     xr_device = XRRuntime()  # 初始化 xr 设备
     mapper = PoseMapper()
     visualizer = Visualizer()
+    lowpass = LowPassFilter(alpha=0.3)
 
     # 初始化参考姿态（只需一次）
     init_pos  = [0.0, 0.0, 1.2]
@@ -64,6 +66,8 @@ if __name__ == "__main__":
                 target_pose = target_pos + target_ori
                 # target_pose = target_pos + init_quat
                 # target_pose = init_pos + target_ori
+
+                target_pose = lowpass.update(target_pose)
 
                 visualizer.update( [target_pose, vr_pose] )
 
