@@ -10,10 +10,12 @@ from .runtime import XRRuntime
 from .panel import ControlPanel
 from .visualizer import Visualizer
 from .zmq_pub import ZMQPublisher
+from .pose_mapper import PoseMapper
 
 __all__ = [
     "XRRuntime",
     "ControlPanel",
     "Visualizer",
     "ZMQPublisher",
+    "PoseMapper",
 ]
