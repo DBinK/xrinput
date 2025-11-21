@@ -37,7 +37,7 @@ class LowPassFilter:
 
 if __name__ == '__main__':
     # 创建低通滤波器实例，alpha=0.3
-    filter = RealTimeLowPassFilter(alpha=0.3)
+    filter = LowPassFilter(alpha=0.3)
     
     # 模拟一些带有噪声的数据
     test_data = [

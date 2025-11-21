@@ -29,9 +29,8 @@ from typing import Any, Dict
 
 import xr
 
-from .core import create_context, XRContext
-from .reader import XRInputReader
-from .panel import ControlPanel
+from .xr_core import create_context, XRContext
+from .xr_reader import XRInputReader
 
 
 class XRRuntime:
@@ -148,6 +147,8 @@ class XRRuntime:
 
 if __name__ == "__main__":
     # 提供一个等价于原 btn.py 的简单示例循环 :contentReference[oaicite:2]{index=2}
+    
+    from ..monitor.panel import CommandLinePanel
     import traceback
 
     rt = None
@@ -155,7 +156,7 @@ if __name__ == "__main__":
 
     try:
         rt = XRRuntime()
-        panel = ControlPanel(title="Quest 3 控制器状态")
+        panel = CommandLinePanel(title="Quest 3 控制器状态")
         panel.start()
 
         # 运行 600 帧，大约 1 分钟（0.1s/帧）

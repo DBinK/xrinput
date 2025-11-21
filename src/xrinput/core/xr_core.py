@@ -17,8 +17,8 @@ from typing import Dict, Tuple
 
 import xr
 
-from xrinput.log import logger
-from .config import (
+from ..monitor.log import logger
+from .xr_config import (
     ACTION_CONFIG,
     CONTROLLER_SUBACTION_PATHS,
     get_enabled_extensions,

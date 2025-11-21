@@ -1,8 +1,8 @@
 import random
 import time 
-from xrinput import ControlPanel
+from xrinput import CommandLinePanel
 
-panel = ControlPanel(title="中控面板", float_precision=4)
+panel = CommandLinePanel(title="中控面板", float_precision=4)
 panel.start()
 
 data_dict = {

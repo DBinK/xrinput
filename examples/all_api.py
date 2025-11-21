@@ -4,8 +4,7 @@ import time
 
 from looptick import LoopTick  # (可选项) 帧率计算 pip install looptick
 
-from xrinput import XRRuntime, ControlPanel, Visualizer
-from xrinput.utils import convert_pose
+from xrinput import XRRuntime, CommandLinePanel, Visualizer, PoseTransform
 
 if __name__ == "__main__":
 
@@ -13,10 +12,11 @@ if __name__ == "__main__":
 
     xr_device = XRRuntime()  # 初始化 xr 设备
 
-    panel = ControlPanel(title="XR 控制器状态")  # 创建 CLI 显示面板
+    panel = CommandLinePanel(title="XR 控制器状态")  # 创建 CLI 显示面板
     panel.start()
 
     visualizer = Visualizer()  # 创建可视化器实例
+    xr2bot = PoseTransform()
 
     loop= LoopTick()   # 创建帧率计算实例
 
@@ -49,9 +49,9 @@ if __name__ == "__main__":
                 right_pose = right_pos + right_rot
                 hmd_pose = hmd_pos + hmd_rot
 
-                left_pose_robot = convert_pose(left_pose)
-                right_pose_robot = convert_pose(right_pose)
-                hmd_pose_robot = convert_pose(hmd_pose)
+                left_pose_robot = xr2bot.pose(left_pose)
+                right_pose_robot = xr2bot.pose(right_pose)
+                hmd_pose_robot = xr2bot.pose(hmd_pose)
 
 
                 visualizer.update([left_pose_robot, right_pose_robot, hmd_pose_robot])

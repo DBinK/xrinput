@@ -14,8 +14,8 @@ from typing import Any, Dict, Optional
 
 import xr
 
-from .config import ACTION_CONFIG
-from .core import XRContext
+from .xr_config import ACTION_CONFIG
+from .xr_core import XRContext
 
 
 class XRInputReader:

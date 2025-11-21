@@ -5,7 +5,7 @@ from rich.panel import Panel
 import time
 import threading
 
-class ControlPanel:
+class CommandLinePanel:
     """终端底部中控面板，可使用 dict 更新数据"""
 
     def __init__(self, refresh_hz=8, title="中控面板", float_precision=3):
@@ -82,7 +82,7 @@ if __name__ == "__main__":
     import time
     import random
 
-    panel = ControlPanel()
+    panel = CommandLinePanel()
     panel.start()
 
     for i in range(9999):

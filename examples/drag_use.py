@@ -1,10 +1,6 @@
 import time
 
-from scipy.spatial.transform import Rotation as R
-
-from xrinput import XRRuntime, PoseMapper, Visualizer
-from xrinput.utils import convert_pose
-from xrinput.filters import LowPassFilter
+from xrinput import XRRuntime, PoseMapper, Visualizer, LowPassFilter, PoseTransform
 
 if __name__ == "__main__":
 
@@ -13,6 +9,7 @@ if __name__ == "__main__":
     mapper = PoseMapper()
     visualizer = Visualizer()
     lowpass = LowPassFilter(alpha=0.3)
+    xr2bot = PoseTransform()
 
     # 初始化参考姿态（只需一次）
     init_pos  = [0.0, 0.0, 1.2]
@@ -40,7 +37,7 @@ if __name__ == "__main__":
 
             raw_pose = raw_pos+raw_orient
 
-            vr_pose   = convert_pose(raw_pose)
+            vr_pose   = xr2bot.pose(raw_pose)
             vr_pos     = vr_pose[:3]
             vr_quat    = vr_pose[3:]
 
