@@ -10,6 +10,7 @@ dependencies = [
     "looptick>=0.1.4",
     "pyopenxr>=1.1.5301",
     "scipy>=1.15.3",
+    "scipy-stubs>=1.15.3.0",
 ]
 
 [project.optional-dependencies]
