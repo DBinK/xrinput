@@ -31,10 +31,10 @@ if __name__ == "__main__":
     loop= LoopTick()   # 创建帧率计算实例
 
     # 初始化左右物体的参考姿态
-    left_init_pos  = [-0.1, 0.0, 1.2]   # 左边的物体
+    left_init_pos  = [0.21, 0.0, 0.226]   # 左边的物体
     left_init_quat = [0.0, 0.0, 0.0, 1.0]
     
-    right_init_pos = [0.1, 0.0, 1.2]    # 右边的物体
+    right_init_pos = [0.21, 0.0, 0.226]    # 右边的物体
     right_init_quat = [0.0, 0.0, 0.0, 1.0]
 
     left_target_pose = None
