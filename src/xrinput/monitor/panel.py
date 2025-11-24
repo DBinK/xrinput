@@ -15,6 +15,7 @@ class CommandLinePanel:
         self.float_precision = float_precision
         self.data = {}
         self._live = None
+        self.start()  # 启动
 
     # 构建面板
     def _make_panel(self):

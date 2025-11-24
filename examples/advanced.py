@@ -11,7 +11,6 @@ if __name__ == "__main__":
     xr_device = XRRuntime()  # 初始化 xr 设备
 
     panel = CommandLinePanel(title="XR 控制器状态")  # 创建 CLI 显示面板
-    panel.start()
 
     visualizer = Visualizer()  # 创建可视化器实例
     xr2bot = PoseTransform()
