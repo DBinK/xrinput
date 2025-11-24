@@ -52,6 +52,8 @@ class TimeConverter:
         else:
             # Linux / 其他平台使用 timespec
             self._timespec_time = xr.timespec()
+            # 显式使用全局作用域中的 ctypes
+            import ctypes
             self._func = ctypes.cast( # type: ignore
                 xr.get_instance_proc_addr(
                     instance=self.instance,
@@ -76,11 +78,19 @@ class TimeConverter:
                 ctypes.byref(xr_time),
             )
         else:
-            current_time_s = time.time()
-            self._timespec_time.tv_sec = int(current_time_s)
-            self._timespec_time.tv_nsec = int(
-                (current_time_s - self._timespec_time.tv_sec) * 1_000_000_000
-            )
+            # 使用 libc 的 clock_gettime 来获取精确的时间
+            import ctypes.util
+            libc = ctypes.CDLL(ctypes.util.find_library("c"))
+            class Timespec(ctypes.Structure):
+                _fields_ = [("tv_sec", ctypes.c_long), ("tv_nsec", ctypes.c_long)]
+            
+            ts = Timespec()
+            # CLOCK_MONOTONIC = 1 (通常情况下)
+            libc.clock_gettime(1, ctypes.byref(ts))
+            
+            self._timespec_time.tv_sec = ts.tv_sec
+            self._timespec_time.tv_nsec = ts.tv_nsec
+            
             result = self._func(
                 self.instance,
                 ctypes.pointer(self._timespec_time),
