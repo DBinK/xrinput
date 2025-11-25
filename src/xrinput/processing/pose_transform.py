@@ -65,6 +65,15 @@ class PoseTransform:
     def set_matrix(self, R_mat):
         self.__init__(R_mat)   # 重新初始化全部缓存
 
+    def rot_basis(self, xr_quat):
+        xr_R = R.from_quat(xr_quat).as_matrix()
+        robot_R = self.R @ xr_R @ self.R.T
+        return R.from_matrix(robot_R).as_quat().tolist()
+
+    def rot_basis_inv(self, robot_quat):
+        robot_R = R.from_quat(robot_quat).as_matrix()
+        xr_R = self.R.T @ robot_R @ self.R
+        return R.from_matrix(xr_R).as_quat().tolist()
 
 # 测试
 if __name__ == "__main__":
@@ -73,3 +82,27 @@ if __name__ == "__main__":
     xr_pose = [0.1, 0.2, 0.3, 0, 0.1, 0, 0.99]
     print("XR→Robot:", cc.pose(xr_pose))
     print("Robot→XR:", cc.pose_inv(cc.pose(xr_pose)))
+
+    
+    tf = PoseTransform()
+
+    tests = {
+        "rx90": R.from_euler("x", 90, degrees=True).as_quat(),
+        "ry90": R.from_euler("y", 90, degrees=True).as_quat(),
+        "rz90": R.from_euler("z", 90, degrees=True).as_quat(),
+        "xyz combo": R.from_euler("xyz", [30, 45, 60], degrees=True).as_quat(),
+    }
+
+    def euler(q):
+        return np.round(R.from_quat(q).as_euler("xyz", degrees=True), 2)
+
+    for name, q in tests.items():
+        print("====", name)
+        print("XR:", (q))
+
+        q_simple = tf.rot(q)
+        print("rot:", (q_simple))
+
+        q_frame = tf.rot_basis(q)
+        print("rot_basis:", (q_frame))
+        print()

@@ -6,6 +6,9 @@ from xrinput import XRRuntime, PoseMapper, Visualizer, LowPassFilter, PoseTransf
 from xrinput.comm.zmq_pub import ZMQPublisher
 from xrinput.monitor.panel import CommandLinePanel
 
+UNIT_POS = [0,0,0]
+UNIT_QUAT = [0,0,0,1]
+
 if __name__ == "__main__":
 
     # 初始化 xr 设备
@@ -31,11 +34,17 @@ if __name__ == "__main__":
     loop= LoopTick()   # 创建帧率计算实例
 
     # 初始化左右物体的参考姿态
-    left_init_pos  = [0.21, 0.0, 0.226]   # 左边的物体
-    left_init_quat = [0.0, 0.0, 0.0, 1.0]
+    # left_init_pos  =  [-0.32451886, -0.58573484 , 0.18154748]  # 左边的物体
+    # left_init_quat =  [ 0.00615661, 0.04373275, -0.3146185,  -0.9481903]
     
-    right_init_pos = [0.21, 0.0, 0.226]    # 右边的物体
-    right_init_quat = [0.0, 0.0, 0.0, 1.0]
+    # right_init_pos = [-0.32451886, -0.58573484 , 0.18154748]    # 右边的物体
+    # right_init_quat = [ 0.00615661, 0.04373275, -0.3146185,  -0.9481903]
+
+    left_init_pos  =  [0,0,0]  # 左边的物体
+    left_init_quat =  [0,0,0,1]
+    
+    right_init_pos = [0,0,0]     # 右边的物体
+    right_init_quat = [0,0,0,1]
 
     left_target_pose = None
     right_target_pose = None
@@ -48,12 +57,10 @@ if __name__ == "__main__":
         while True:
             xr_data = xr_device.read_input()
 
-
-
             if xr_data is None:
                 time.sleep(0.005)
                 continue
-            
+
             # 获取左右手的位置、方向和触发器状态
             left_raw_pos = xr_data.get("left_pos") 
             left_raw_orient = xr_data.get("left_rot")
@@ -100,6 +107,15 @@ if __name__ == "__main__":
             elif right_trigger > 0.5 and right_mapper.dragging:
                 right_mapper.update(right_vr_pos, right_vr_quat)
 
+            
+            # 按下A键和X键 → 重置目标姿态
+            a_click = xr_data.get("a_click") 
+            x_click = xr_data.get("x_click") 
+
+            if a_click == 1 and x_click == 1: 
+                left_mapper.set_target(UNIT_POS, UNIT_QUAT)
+                right_mapper.set_target(UNIT_POS, UNIT_QUAT)
+            
             # 获取映射后的目标姿态
             left_target_pos, left_target_ori = left_mapper.get_target()
             right_target_pos, right_target_ori = right_mapper.get_target()
@@ -110,12 +126,16 @@ if __name__ == "__main__":
             # 添加左手控制的物体姿态
             if left_target_pos is not None and left_target_ori is not None:
                 left_target_pose = left_target_pos + left_target_ori
+                # left_target_pose = left_target_pos + left_target_ori
+                # left_target_pose = left_target_pos + left_target_ori
                 left_target_pose = left_lowpass.update(left_target_pose)
                 all_poses.append(left_target_pose)
                 
             # 添加右手控制的物体姿态
             if right_target_pos is not None and right_target_ori is not None:
                 right_target_pose = right_target_pos + right_target_ori
+                # right_target_pose = right_target_pos + right_target_ori
+                # right_target_pose = right_target_pos + right_target_ori
                 right_target_pose = right_lowpass.update(right_target_pose)
                 all_poses.append(right_target_pose)
                 

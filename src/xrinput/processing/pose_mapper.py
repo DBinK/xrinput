@@ -82,6 +82,9 @@ class PoseMapper:
             return None, None
         return self.current_t.tolist(), self.current_R.as_quat().tolist()
 
+    def set_target(self, target_pos, target_quat):
+        self.current_t = np.array(target_pos)
+        self.current_R = R.from_quat(target_quat)
 
 
 if __name__ == "__main__":
