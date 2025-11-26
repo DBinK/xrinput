@@ -34,17 +34,17 @@ if __name__ == "__main__":
     loop= LoopTick()   # 创建帧率计算实例
 
     # 初始化左右物体的参考姿态
-    # left_init_pos  =  [-0.32451886, -0.58573484 , 0.18154748]  # 左边的物体
-    # left_init_quat =  [ 0.00615661, 0.04373275, -0.3146185,  -0.9481903]
+    left_init_pos  =   [ 0.66368765, -0.01102569,  0.1815471 ]  # 左边的物体
+    left_init_quat =  [0.04183858, 0.01414128,  0.70586795, -0.7069652]
     
-    # right_init_pos = [-0.32451886, -0.58573484 , 0.18154748]    # 右边的物体
-    # right_init_quat = [ 0.00615661, 0.04373275, -0.3146185,  -0.9481903]
+    right_init_pos = [ 0.66368765, -0.01102569,  0.1815471 ]     # 右边的物体
+    right_init_quat = [ 0.04183858, 0.01414128,  0.70586795, -0.7069652]
 
-    left_init_pos  =  [0,0,0]  # 左边的物体
-    left_init_quat =  [0,0,0,1]
+    # left_init_pos  =  [0,0,0]  # 左边的物体
+    # left_init_quat =  [0,0,0,1]
     
-    right_init_pos = [0,0,0]     # 右边的物体
-    right_init_quat = [0,0,0,1]
+    # right_init_pos = [0,0,0]     # 右边的物体
+    # right_init_quat = [0,0,0,1]
 
     left_target_pose = None
     right_target_pose = None
@@ -113,8 +113,10 @@ if __name__ == "__main__":
             x_click = xr_data.get("x_click") 
 
             if a_click == 1 and x_click == 1: 
-                left_mapper.set_target(UNIT_POS, UNIT_QUAT)
-                right_mapper.set_target(UNIT_POS, UNIT_QUAT)
+                # left_mapper.set_target(UNIT_POS, UNIT_QUAT)
+                # right_mapper.set_target(UNIT_POS, UNIT_QUAT)
+                left_mapper.set_target(left_init_pos, left_init_quat)
+                right_mapper.set_target(right_init_pos, right_init_quat)
             
             # 获取映射后的目标姿态
             left_target_pos, left_target_ori = left_mapper.get_target()
