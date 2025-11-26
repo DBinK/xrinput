@@ -12,6 +12,7 @@ class ZMQSubscriber:
     def __init__(self, address="tcp://localhost:5555"):
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.SUB)
+        self.socket.setsockopt(zmq.CONFLATE, 1)  # 仅保留最新的1帧消息
         self.socket.connect(address)
         self.socket.setsockopt_string(zmq.SUBSCRIBE, "")
 
