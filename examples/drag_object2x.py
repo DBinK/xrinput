@@ -6,6 +6,9 @@ from xrinput import XRRuntime, PoseMapper, Visualizer, LowPassFilter, PoseTransf
 from xrinput.comm.zmq_pub import ZMQPublisher
 from xrinput.monitor.panel import CommandLinePanel
 
+INIT_POS  =   [0.21054126, 0.00141549, 0.22679673] 
+INIT_QUAT =  [  -0.47771874, -0.4777191, -0.5213261, -0.5213333 ]
+
 UNIT_POS = [0,0,0]
 UNIT_QUAT = [0,0,0,1]
 
@@ -34,17 +37,17 @@ if __name__ == "__main__":
     loop= LoopTick()   # 创建帧率计算实例
 
     # 初始化左右物体的参考姿态
-    left_init_pos  =   [ 0.66368765, -0.01102569,  0.1815471 ]  # 左边的物体
-    left_init_quat =  [0.04183858, 0.01414128,  0.70586795, -0.7069652]
+    left_init_pos  = INIT_POS  # 左边的物体
+    left_init_quat = INIT_QUAT
     
-    right_init_pos = [ 0.66368765, -0.01102569,  0.1815471 ]     # 右边的物体
-    right_init_quat = [ 0.04183858, 0.01414128,  0.70586795, -0.7069652]
+    right_init_pos = INIT_POS    # 右边的物体
+    right_init_quat = INIT_QUAT
 
-    # left_init_pos  =  [0,0,0]  # 左边的物体
-    # left_init_quat =  [0,0,0,1]
+    # left_init_pos  =  UNIT_POS  # 左边的物体
+    # left_init_quat =  UNIT_QUAT
     
-    # right_init_pos = [0,0,0]     # 右边的物体
-    # right_init_quat = [0,0,0,1]
+    # right_init_pos = UNIT_POS     # 右边的物体
+    # right_init_quat = UNIT_QUAT
 
     left_target_pose = None
     right_target_pose = None
@@ -69,9 +72,17 @@ if __name__ == "__main__":
             right_raw_pos = xr_data.get("right_pos") 
             right_raw_orient = xr_data.get("right_rot")
             right_trigger = xr_data.get("trigger_right")
-            
-            if (left_raw_pos is None or left_raw_orient is None or left_trigger is None or 
-                right_raw_pos is None or right_raw_orient is None or right_trigger is None):
+
+            # 确保数据有效
+            if (
+                left_raw_pos is None
+                or left_raw_orient is None
+                or left_trigger is None
+                or right_raw_pos is None
+                or right_raw_orient is None
+                or right_trigger is None
+            ):
+                time.sleep(0.005)
                 continue
 
             # 转换左右手姿态到机器人坐标系
@@ -107,7 +118,7 @@ if __name__ == "__main__":
             elif right_trigger > 0.5 and right_mapper.dragging:
                 right_mapper.update(right_vr_pos, right_vr_quat)
 
-            
+            ## 复位逻辑
             # 按下A键和X键 → 重置目标姿态
             a_click = xr_data.get("a_click") 
             x_click = xr_data.get("x_click") 
@@ -118,11 +129,12 @@ if __name__ == "__main__":
                 left_mapper.set_target(left_init_pos, left_init_quat)
                 right_mapper.set_target(right_init_pos, right_init_quat)
             
+            ## 处理姿态数据
             # 获取映射后的目标姿态
             left_target_pos, left_target_ori = left_mapper.get_target()
             right_target_pos, right_target_ori = right_mapper.get_target()
             
-            # 收集所有需要可视化的姿态
+            # 装填所有需要可视化的姿态
             all_poses = []
             
             # 添加左手控制的物体姿态
@@ -145,27 +157,25 @@ if __name__ == "__main__":
             all_poses.append(left_vr_pose)
             all_poses.append(right_vr_pose)
 
-
             # 计算帧率
             loop.tick()
             
             if all_poses:
-                
                 # 更新可视化显示
-                panel_data = {
+                panel_dict = {
                     "会话状态": xr_device.session_state.name,
                     "帧率": loop.get_avg_hz(),
                     "left_target_pose": left_target_pose,
                     "right_target_pose": right_target_pose,
                 }
-                panel_data.update(xr_data)
-                panel.update(panel_data)       # 更新CLI面板数据
+                panel_dict.update(xr_data)           # 添加输入数据
+                panel.update(panel_dict)       # 更新CLI面板数据
                 visualizer.update(all_poses)  # 更新可视化显示
 
                 # 发送数据
-                pub.send(panel_data)
+                pub.send(panel_dict)
 
-            time.sleep(0.001)
+            time.sleep(0.001)  # 休眠1ms, 避免CPU占用过高
 
     except KeyboardInterrupt:
         print("退出程序")
