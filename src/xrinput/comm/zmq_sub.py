@@ -1,8 +1,6 @@
 # zmq_sub.py
 # 接收端（SUB）
 
-# zmq_sub_poll.py
-
 import zmq
 from rich import print
 
