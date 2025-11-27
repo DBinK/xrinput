@@ -14,6 +14,7 @@ from .monitor.panel import CommandLinePanel
 from .monitor.visualizer import Visualizer
 
 # 数据处理模块
+from .processing.box3d import Box3D
 from .processing.filters import LowPassFilter
 from .processing.pose_mapper import PoseMapper
 from .processing.pose_transform import PoseTransform
@@ -29,9 +30,10 @@ __all__ = [
     "CommandLinePanel",
     "Visualizer",
 
+    "Box3D",
+    "LowPassFilter",
     "PoseMapper",
     "PoseTransform",
-    "LowPassFilter",
 
     "ZMQPublisher",
     "ZMQSubscriber",
