@@ -2,15 +2,23 @@ import time
 
 from looptick import LoopTick
 
-from xrinput import XRRuntime, PoseMapper, Visualizer, LowPassFilter, PoseTransform
+from xrinput import XRRuntime, PoseMapper, Visualizer, LowPassFilter, PoseTransform, Box3D
 from xrinput.comm.zmq_pub import ZMQPublisher
 from xrinput.monitor.panel import CommandLinePanel
+
+UNIT_POS = [0,0,0]
+UNIT_QUAT = [0,0,0,1]
 
 INIT_POS  =    [0.33043602, 0.0014140427, 0.03475538]
 INIT_QUAT =  [-0.7012303, -0.7012283, -0.09097862, -0.09098181]
 
-UNIT_POS = [0,0,0]
-UNIT_QUAT = [0,0,0,1]
+X_LIMIT = [-9.0, 9.0]
+Y_LIMIT = [-9.0, 9.0]
+Z_LIMIT = [0.0, 9.0]
+
+LPF_ALPHA = 0.3
+
+TRIGGER_THRESH = 0.5
 
 if __name__ == "__main__":
 
@@ -23,8 +31,9 @@ if __name__ == "__main__":
 
     # 数据处理
     xr2bot = PoseTransform()  # 变换为机器人坐标系下的姿态
-    left_lowpass = LowPassFilter(alpha=0.3)
-    right_lowpass = LowPassFilter(alpha=0.3)
+    left_lowpass = LowPassFilter(alpha=LPF_ALPHA)
+    right_lowpass = LowPassFilter(alpha=LPF_ALPHA)
+    space = Box3D(X_LIMIT, Y_LIMIT, Z_LIMIT)
     
     # 创建手柄映射器
     left_mapper = PoseMapper()
@@ -98,24 +107,24 @@ if __name__ == "__main__":
 
             # 处理左手拖拽逻辑
             # 1. 松开按钮 → 停止拖拽
-            if left_trigger <= 0.5:
+            if left_trigger <= TRIGGER_THRESH:
                 left_mapper.stop_drag()
             # 2. 按下按钮且尚未开始拖拽 → 开始拖拽
-            elif left_trigger > 0.5 and not left_mapper.dragging:
+            elif left_trigger > TRIGGER_THRESH and not left_mapper.dragging:
                 left_mapper.start_drag(left_vr_pos, left_vr_quat)
             # 3. 按住按钮 → 持续更新姿态
-            elif left_trigger > 0.5 and left_mapper.dragging:
+            elif left_trigger > TRIGGER_THRESH and left_mapper.dragging:
                 left_mapper.update(left_vr_pos, left_vr_quat)
 
             # 处理右手拖拽逻辑
             # 1. 松开按钮 → 停止拖拽
-            if right_trigger <= 0.5:
+            if right_trigger <= TRIGGER_THRESH:
                 right_mapper.stop_drag()
             # 2. 按下按钮且尚未开始拖拽 → 开始拖拽
-            elif right_trigger > 0.5 and not right_mapper.dragging:
+            elif right_trigger > TRIGGER_THRESH and not right_mapper.dragging:
                 right_mapper.start_drag(right_vr_pos, right_vr_quat)
             # 3. 按住按钮 → 持续更新姿态
-            elif right_trigger > 0.5 and right_mapper.dragging:
+            elif right_trigger > TRIGGER_THRESH and right_mapper.dragging:
                 right_mapper.update(right_vr_pos, right_vr_quat)
 
             ## 复位逻辑
