@@ -14,7 +14,7 @@ INIT_QUAT =  [-0.7012303, -0.7012283, -0.09097862, -0.09098181]
 
 X_LIMIT = [-9.0, 9.0]
 Y_LIMIT = [-9.0, 9.0]
-Z_LIMIT = [0.0, 9.0]
+Z_LIMIT = [-0.0, 9.0]
 
 LPF_ALPHA = 0.3
 
@@ -31,9 +31,9 @@ if __name__ == "__main__":
 
     # 数据处理
     xr2bot = PoseTransform()  # 变换为机器人坐标系下的姿态
-    left_lowpass = LowPassFilter(alpha=LPF_ALPHA)
+    left_lowpass = LowPassFilter(alpha=LPF_ALPHA)    # 低通滤波, 仅适用于位置滤波
     right_lowpass = LowPassFilter(alpha=LPF_ALPHA)
-    space = Box3D(X_LIMIT, Y_LIMIT, Z_LIMIT)
+    space = Box3D(X_LIMIT, Y_LIMIT, Z_LIMIT)  # 限制范围
     
     # 创建手柄映射器
     left_mapper = PoseMapper()
@@ -148,18 +148,26 @@ if __name__ == "__main__":
             
             # 添加左手控制的物体姿态
             if left_target_pos is not None and left_target_ori is not None:
+                # 滤波
+                left_target_pos = left_lowpass.update(left_target_pos)
+                left_target_pos = space.clamp(left_target_pos)
+
+                # 组装姿态
                 left_target_pose = left_target_pos + left_target_ori
-                # left_target_pose = left_target_pos + left_target_ori
-                # left_target_pose = left_target_pos + left_target_ori
-                left_target_pose = left_lowpass.update(left_target_pose)
+                # left_target_pose = left_target_pos + left_init_ori  # 仅位置
+                # left_target_pose = left_init_pos + left_target_ori  # 仅姿态
                 all_poses.append(left_target_pose)
                 
             # 添加右手控制的物体姿态
             if right_target_pos is not None and right_target_ori is not None:
+                # 滤波
+                right_target_pos = right_lowpass.update(right_target_pos)
+                right_target_pos = space.clamp(right_target_pos)
+
+                # 组装姿态
                 right_target_pose = right_target_pos + right_target_ori
-                # right_target_pose = right_target_pos + right_target_ori
-                # right_target_pose = right_target_pos + right_target_ori
-                right_target_pose = right_lowpass.update(right_target_pose)
+                # right_target_pose = right_target_pos + right_init_ori  # 仅位置
+                # right_target_pose = right_init_pos + right_target_ori  # 仅姿态
                 all_poses.append(right_target_pose)
                 
             # 添加左右手控制器的姿态用于可视化参考
