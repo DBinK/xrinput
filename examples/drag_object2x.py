@@ -6,8 +6,8 @@ from xrinput import XRRuntime, PoseMapper, Visualizer, LowPassFilter, PoseTransf
 from xrinput.comm.zmq_pub import ZMQPublisher
 from xrinput.monitor.panel import CommandLinePanel
 
-INIT_POS  =   [0.21054126, 0.00141549, 0.22679673] 
-INIT_QUAT =  [  -0.47771874, -0.4777191, -0.5213261, -0.5213333 ]
+INIT_POS  =    [0.33043602, 0.0014140427, 0.03475538]
+INIT_QUAT =  [-0.7012303, -0.7012283, -0.09097862, -0.09098181]
 
 UNIT_POS = [0,0,0]
 UNIT_QUAT = [0,0,0,1]
