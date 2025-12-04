@@ -82,7 +82,7 @@ class TimeConverter:
             # 使用 libc 的 clock_gettime 来获取精确的时间
             # import ctypes.util
 
-            libc = ctypes.CDLL( self.linux_ctypes.util.find_library("c"))
+            libc = ctypes.CDLL( self.linux_ctypes.util.find_library("c")) # type: ignore
             class Timespec(ctypes.Structure):
                 _fields_ = [("tv_sec", ctypes.c_long), ("tv_nsec", ctypes.c_long)]
             

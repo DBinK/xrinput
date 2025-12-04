@@ -9,8 +9,12 @@ from xrinput.monitor.panel import CommandLinePanel
 UNIT_POS = [0,0,0]
 UNIT_QUAT = [0,0,0,1]
 
-INIT_POS  =    [0.33043602, 0.0014140427, 0.03475538]
-INIT_QUAT =  [-0.7012303, -0.7012283, -0.09097862, -0.09098181]
+# INIT_POS  =    [0.33043602, 0.0014140427, 0.03475538]
+# INIT_QUAT =  [-0.7012303, -0.7012283, -0.09097862, -0.09098181]
+# INIT_POS  =  [0.5298124, 0.0014129102, 0.12473178]
+# INIT_QUAT =  [-0.5480338, -0.5480338, -0.44682866, -0.4468356]
+INIT_POS =  [0.33841822, 0.0014140522, 0.104647756]
+INIT_QUAT =  [-0.56119007, -0.5611902, -0.43018907, -0.43019584]
 
 X_LIMIT = [-9.0, 9.0]
 Y_LIMIT = [-9.0, 9.0]
@@ -76,20 +80,24 @@ if __name__ == "__main__":
             # 获取左右手的位置、方向和触发器状态
             left_raw_pos = xr_data.get("left_pos") 
             left_raw_orient = xr_data.get("left_rot")
-            left_trigger = xr_data.get("trigger_left")
+            # left_trigger = xr_data.get("trigger_left")
+            left_grip = xr_data.get("grip_left")
             
             right_raw_pos = xr_data.get("right_pos") 
             right_raw_orient = xr_data.get("right_rot")
-            right_trigger = xr_data.get("trigger_right")
+            # right_trigger = xr_data.get("trigger_right")
+            right_grip = xr_data.get("grip_right")
 
             # 确保数据有效
             if (
                 left_raw_pos is None
                 or left_raw_orient is None
-                or left_trigger is None
+                # or left_trigger is None
+                or left_grip is None
                 or right_raw_pos is None
                 or right_raw_orient is None
-                or right_trigger is None
+                # or right_trigger is None
+                or right_grip is None
             ):
                 time.sleep(0.005)
                 continue
@@ -107,32 +115,32 @@ if __name__ == "__main__":
 
             # 处理左手拖拽逻辑
             # 1. 松开按钮 → 停止拖拽
-            if left_trigger <= TRIGGER_THRESH:
+            if left_grip <= TRIGGER_THRESH:
                 left_mapper.stop_drag()
             # 2. 按下按钮且尚未开始拖拽 → 开始拖拽
-            elif left_trigger > TRIGGER_THRESH and not left_mapper.dragging:
+            elif left_grip > TRIGGER_THRESH and not left_mapper.dragging:
                 left_mapper.start_drag(left_vr_pos, left_vr_quat)
             # 3. 按住按钮 → 持续更新姿态
-            elif left_trigger > TRIGGER_THRESH and left_mapper.dragging:
+            elif left_grip > TRIGGER_THRESH and left_mapper.dragging:
                 left_mapper.update(left_vr_pos, left_vr_quat)
 
             # 处理右手拖拽逻辑
             # 1. 松开按钮 → 停止拖拽
-            if right_trigger <= TRIGGER_THRESH:
+            if right_grip <= TRIGGER_THRESH:
                 right_mapper.stop_drag()
             # 2. 按下按钮且尚未开始拖拽 → 开始拖拽
-            elif right_trigger > TRIGGER_THRESH and not right_mapper.dragging:
+            elif right_grip > TRIGGER_THRESH and not right_mapper.dragging:
                 right_mapper.start_drag(right_vr_pos, right_vr_quat)
             # 3. 按住按钮 → 持续更新姿态
-            elif right_trigger > TRIGGER_THRESH and right_mapper.dragging:
+            elif right_grip > TRIGGER_THRESH and right_mapper.dragging:
                 right_mapper.update(right_vr_pos, right_vr_quat)
 
             ## 复位逻辑
             # 按下A键和X键 → 重置目标姿态
-            a_click = xr_data.get("a_click") 
-            x_click = xr_data.get("x_click") 
+            b_click = xr_data.get("b_click") 
+            y_click = xr_data.get("y_click") 
 
-            if a_click == 1 and x_click == 1: 
+            if b_click == 1 and y_click == 1: 
                 # left_mapper.set_target(UNIT_POS, UNIT_QUAT)
                 # right_mapper.set_target(UNIT_POS, UNIT_QUAT)
                 left_mapper.set_target(left_init_pos, left_init_quat)
