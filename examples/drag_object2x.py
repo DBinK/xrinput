@@ -116,17 +116,6 @@ if __name__ == "__main__":
             right_vr_pos = right_vr_pose[:3]
             right_vr_quat = right_vr_pose[3:]
 
-            # 处理左手拖拽逻辑
-            # 1. 松开按钮 → 停止拖拽
-            if left_grip <= TRIGGER_THRESH:
-                left_mapper.stop_drag()
-            # 2. 按下按钮且尚未开始拖拽 → 开始拖拽
-            elif left_grip > TRIGGER_THRESH and not left_mapper.dragging:
-                left_mapper.start_drag(left_vr_pos, left_vr_quat)
-            # 3. 按住按钮 → 持续更新姿态
-            elif left_grip > TRIGGER_THRESH and left_mapper.dragging:
-                left_mapper.update(left_vr_pos, left_vr_quat)
-
             # 处理右手拖拽逻辑
             # 1. 松开按钮 → 停止拖拽
             if right_grip <= TRIGGER_THRESH:
@@ -138,17 +127,38 @@ if __name__ == "__main__":
             elif right_grip > TRIGGER_THRESH and right_mapper.dragging:
                 right_mapper.update(right_vr_pos, right_vr_quat)
 
-            ## 复位逻辑
-            # 按下A键和X键 → 重置目标姿态
-            b_click = xr_data.get("b_click") 
-            y_click = xr_data.get("y_click") 
+            # 按住 y 键同步运动
+            y_click = xr_data.get("y_click")
 
-            if b_click == 1 and y_click == 1: 
+            # 处理左手拖拽逻辑
+            # 1. 松开按钮 → 停止拖拽
+            if left_grip <= TRIGGER_THRESH and y_click == 0:
+                left_mapper.stop_drag()
+            # 2. 按下按钮且尚未开始拖拽 → 开始拖拽
+            elif left_grip > TRIGGER_THRESH and not left_mapper.dragging:
+                left_mapper.start_drag(left_vr_pos, left_vr_quat)
+            # 3. 按住按钮 → 持续更新姿态
+            elif left_grip > TRIGGER_THRESH and left_mapper.dragging:
+                left_mapper.update(left_vr_pos, left_vr_quat)
+
+            # 按住 y 键同步运动的逻辑 (比较复杂)
+            right_target_pos, right_target_ori = right_mapper.get_target()
+            if y_click == 1 and not left_mapper.dragging and right_mapper.dragging:
+                left_mapper.start_drag(right_target_pos, right_target_ori)
+            if y_click == 1 and left_mapper.dragging and right_mapper.dragging:
+                left_mapper.update(right_target_pos, right_target_ori)
+
+            ## 复位逻辑
+            # 按下B键 → 重置目标姿态
+            b_click = xr_data.get("b_click") 
+
+            if b_click == 1: 
                 # left_mapper.set_target(UNIT_POS, UNIT_QUAT)
                 # right_mapper.set_target(UNIT_POS, UNIT_QUAT)
                 left_mapper.set_target(left_init_pos, left_init_quat)
                 right_mapper.set_target(right_init_pos, right_init_quat)
             
+
             ## 处理姿态数据
             # 获取映射后的目标姿态
             left_target_pos, left_target_ori = left_mapper.get_target()
